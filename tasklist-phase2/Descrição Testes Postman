@@ -1,0 +1,5 @@
+1. Login na API para receber um token através de um pedido POST ao URL https://localhost/login com as devidas credenciais.
+2. Se as credenciais estiverem corretas deve ser recebido um token do tipo JWT.
+3. Criar um novo utilizador através de um pedido POST ao URL https://localhost/user enviado o nome de utilizador e password. No token não colocar nada, deve dar erro na criação do utilizador.
+4. Criar um novo utilizador através de um pedido POST ao URL https://localhost/user enviado o nome de utilizador e password. Na autenticação colocar o token recebido no login.
+5. Verificar que a password do utilizador está encriptada na base de dados e que existe um salt.
