@@ -31,7 +31,8 @@ public class UserController {
         byte[] salt = generateSalt();
         log.info("User Salt: {}", bytesToHex(salt));
 
-        User user = userService.addUser(userRequest.username, getHashedPassword(userRequest.password, salt), bytesToHex(salt));
+        User user = userService.addUser(userRequest.username, getHashedPassword(userRequest.password, salt),
+                bytesToHex(salt));
         UserResponse response = new UserResponse(user.getId(), user.getUsername());
         ctx.status(201).json(response);
     }
@@ -89,17 +90,18 @@ public class UserController {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
             String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
+            if (hex.length() == 1)
+                hexString.append('0');
             hexString.append(hex);
         }
         return hexString.toString();
     }
 
-    public static boolean validatePassword(String password, byte[] salt, byte[] storedHash, int iterations, int keyLength) throws Exception {
+    public static boolean validatePassword(String password, byte[] salt, byte[] storedHash, int iterations,
+            int keyLength) throws Exception {
         byte[] hashToCheck = hashPassword(password, salt, iterations, keyLength);
         return Arrays.equals(hashToCheck, storedHash);
     }
-}
 
     public void addProfilePicture(Context ctx) {
         String userId = ctx.pathParam("userId");
