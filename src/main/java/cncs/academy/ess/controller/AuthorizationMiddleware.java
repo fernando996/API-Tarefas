@@ -2,18 +2,12 @@ package cncs.academy.ess.controller;
 
 import cncs.academy.ess.model.User;
 import cncs.academy.ess.repository.UserRepository;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import io.javalin.http.*;
-import org.casbin.jcasbin.main.Enforcer;
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
+import io.javalin.http.HandlerType;
+import io.javalin.http.UnauthorizedResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static cncs.academy.ess.helpers.Jwt.getAlgorith;
-import static cncs.academy.ess.helpers.Jwt.loadPublicKey;
 
 public class AuthorizationMiddleware implements Handler {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationMiddleware.class);
@@ -48,13 +42,10 @@ public class AuthorizationMiddleware implements Handler {
         String token = authorizationHeader.substring(7); // Remove "Bearer "
 
         // Check if token is valid (perform authentication logic)
-        int userId = validateTokenAndGetUserId(token, ctx);
+        int userId = validateTokenAndGetUserId(token);
         if (userId == -1) {
-            logger.info("Authorization token is invalid {}", token);
+            logger.info("Authorization token is invalid {}", token  );
             throw new UnauthorizedResponse();
-        } else if (userId == -2) {
-            logger.info("Authorization permissions are not valid");
-            throw new ForbiddenResponse();
         }
 
         // Add user ID to context for use in route handlers
@@ -65,41 +56,13 @@ public class AuthorizationMiddleware implements Handler {
      * NOTE: This method currently uses username lookup as a placeholder for real token validation.
      * Replace with proper token parsing/verification (e.g., JWT, session lookup) as needed.
      */
-    private Integer validateTokenAndGetUserId(String token, Context ctx) {
-
-        DecodedJWT decodedJWT;
-        try {
-            Algorithm algorithm = getAlgorith(true);
-
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("grupo_9")
-                    .build();
-
-
-            decodedJWT = verifier.verify(token);
-
-            // Placeholder behavior: treat token as username (legacy behavior)
-            User user = userRepository.findByUsername(decodedJWT.getClaim("username").asString());
-
-            if (user == null) {
-                return -1;
-            }
-
-            Enforcer enforcer = new Enforcer("./api-access-control/model.conf", "./api-access-control/policy.csv");
-
-            if (!(enforcer.enforce(user.getUsername(), ctx.path(), ctx.method().name()) == true)) {
-                return -2;
-            }
-
-            return user.getId();
-
-        } catch (JWTVerificationException exception) {
-            // Invalid signature/claims
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private Integer validateTokenAndGetUserId(String token) {
+        // Placeholder behavior: treat token as username (legacy behavior)
+        User user = userRepository.findByUsername(token);
+        if (user == null) {
+            return -1;
         }
-        return -1;
-
+        return user.getId();
     }
 }
 

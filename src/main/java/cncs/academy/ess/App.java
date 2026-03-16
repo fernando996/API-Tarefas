@@ -4,43 +4,34 @@ import cncs.academy.ess.controller.AuthorizationMiddleware;
 import cncs.academy.ess.controller.TodoController;
 import cncs.academy.ess.controller.TodoListController;
 import cncs.academy.ess.controller.UserController;
-import cncs.academy.ess.model.User;
 import cncs.academy.ess.repository.memory.InMemoryTodoRepository;
 import cncs.academy.ess.repository.memory.InMemoryTodoListsRepository;
-import cncs.academy.ess.repository.sql.SQLUserRepository;
+import cncs.academy.ess.repository.memory.InMemoryUserRepository;
+import cncs.academy.ess.service.DuplicateUserException;
 import cncs.academy.ess.service.TodoListsService;
 import cncs.academy.ess.service.TodoUserService;
 import cncs.academy.ess.service.TodoService;
 import io.javalin.Javalin;
 import io.javalin.community.ssl.SslPlugin;
-import org.apache.commons.dbcp2.BasicDataSource;
 
+fernandomartins996/
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 public class App {
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-        SslPlugin plugin = new SslPlugin(conf -> {
-            conf.pemFromPath("../certificate/cert.pem", "../certificate/key.pem", "Pass123#");
-            conf.insecurePort = 7100; // any other config you want to change
-        });
-
+    public static void main(String[] args) throws NoSuchAlgorithmException, DuplicateUserException {
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableCors(cors -> {
                 cors.addRule(it -> {
                     it.anyHost();
                 });
             });
-            config.registerPlugin(plugin);
-        }).start();
+        }).start(7100);
+
+
 
         // Initialize routes for user management
-        //InMemoryUserRepository userRepository = new InMemoryUserRepository();
-        BasicDataSource ds = new BasicDataSource();
-        ds.setDriverClassName("org.postgresql.Driver");
-        String connectURI = String.format("jdbc:postgresql://%s:%s/%s?user=%s&password=%s", "localhost", "5432", "postgres", "postgres", "changeit");
-        ds.setUrl(connectURI);
-
-        SQLUserRepository userRepository = new SQLUserRepository(ds);
+        InMemoryUserRepository userRepository = new InMemoryUserRepository();
         TodoUserService userService = new TodoUserService(userRepository);
         UserController userController = new UserController(userService);
 
@@ -53,6 +44,7 @@ public class App {
         TodoController todoController = new TodoController(todoService, toDoListService);
 
         AuthorizationMiddleware authMiddleware = new AuthorizationMiddleware(userRepository);
+
 
         // CORS
         app.before(ctx -> {
@@ -100,12 +92,11 @@ public class App {
     private static void fillDummyData(
             TodoUserService userService,
             TodoListsService toDoListService,
-            TodoService todoService) throws NoSuchAlgorithmException {
-
-        //userService.addUser("user1", "password1");
-        //userService.addUser("user2", "password2");
+            TodoService todoService) throws NoSuchAlgorithmException, DuplicateUserException {
+        userService.addUser("user1", "password1");
+        userService.addUser("user2", "password2");
         toDoListService.createTodoListItem("Shopping list", 1);
-        toDoListService.createTodoListItem( "Other", 1);
+        toDoListService.createTodoListItem("Other", 1);
         todoService.createTodoItem("Bread", 1);
         todoService.createTodoItem("Milk", 1);
         todoService.createTodoItem("Eggs", 1);

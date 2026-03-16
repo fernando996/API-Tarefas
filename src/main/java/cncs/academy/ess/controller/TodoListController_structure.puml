@@ -1,0 +1,174 @@
+@startuml
+
+/' diagram meta data start
+config=StructureConfiguration;
+{
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": true,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": true,
+    "cutInterfaceStructures": true,
+    "cutDataStructures": true,
+    "cutGetterAndSetter": true,
+    "cutConstructors": true
+  },
+  "graphTraversal": {
+    "forwardDepth": 3,
+    "backwardDepth": 3,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": true, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "ForwardOnly" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showClassGenericTypes": true,
+    "showMethods": true,
+    "showMethodParameterNames": true,
+    "showMethodParameterTypes": true,
+    "showMethodReturnType": true,
+    "showPackageLevels": 2,
+    "showDetailedClassStructure": true
+  },
+  "rootClass": "cncs.academy.ess.controller.TodoListController",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="TB"
+    splines=polyline
+    
+
+'nodes 
+subgraph cluster_1179509012 { 
+   	label=academy
+	labeljust=l
+	fillcolor="#ececec"
+	style=filled
+   
+   subgraph cluster_1149713283 { 
+   	label=ess
+	labeljust=l
+	fillcolor="#d8d8d8"
+	style=filled
+   
+   InMemoryTodoListsRepository997760537[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)InMemoryTodoListsRepository</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   allLists: ConcurrentHashMap&lt;Integer, TodoList&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   currentId: AtomicInteger [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ deleteById(listId: int): boolean</TD></TR>
+<TR><TD ALIGN="LEFT" >+ findAll(): List&lt;TodoList&gt;</TD></TR>
+<TR><TD ALIGN="LEFT" >+ findAllByUserId(userId: int): List&lt;TodoList&gt;</TD></TR>
+<TR><TD ALIGN="LEFT" >+ findById(listId: int): TodoList</TD></TR>
+<TR><TD ALIGN="LEFT" >+ save(todoList: TodoList): int</TD></TR>
+<TR><TD ALIGN="LEFT" >+ update(todoList: TodoList)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+TodoList1304866837[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)TodoList</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   id: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   name: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   ownerId: int [1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+TodoListController684083174[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)TodoListController</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   todoListService: TodoListsService [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ createTodoList(ctx: Context)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ getAllTodoLists(ctx: Context)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ getTodoList(ctx: Context)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+TodoListsService910619383[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)TodoListsService</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >#   todoListsRepository: TodoListsRepository [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ createTodoListItem(listName: String, ownerId: int): TodoList</TD></TR>
+<TR><TD ALIGN="LEFT" >+ getAllTodoLists(userId: int): Collection&lt;TodoList&gt;</TD></TR>
+<TR><TD ALIGN="LEFT" >+ getTodoList(listId: int): TodoList</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+} 
+} 
+
+'edges    
+InMemoryTodoListsRepository997760537 -> TodoList1304866837[label="allLists
+[0..*]"];
+TodoListController684083174 -> TodoListsService910619383[label="todoListService
+[0..1]"];
+TodoListsService910619383 -> InMemoryTodoListsRepository997760537[arrowhead=none];
+    
+}
+@enduml

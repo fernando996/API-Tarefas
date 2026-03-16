@@ -3,7 +3,7 @@ package cncs.academy.ess.model;
 public class Todo {
     /** The id of the todo item */
     private int id;
-    /** The description of the todo item */
+    /** The description of the todo item */ 
     private String description;
     /** The completion status of the todo item */
     private boolean completed;
