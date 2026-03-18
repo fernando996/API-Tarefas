@@ -65,6 +65,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -136,8 +137,10 @@ jobs:
         uses: sigstore/cosign-installer@v3 
 
       - name: Sign all image tags 
+        env:
+          COSIGN_EXPERIMENTAL: "1"
         run: | 
           echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | while read tag; do
            echo "Signing $tag ..."
-          cosign sign --yes "$tag"
+          cosign sign --yes --oidc  "$tag"
           done
