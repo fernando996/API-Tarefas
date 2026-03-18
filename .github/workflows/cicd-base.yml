@@ -142,5 +142,5 @@ jobs:
         run: | 
           echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | while read tag; do
            echo "Signing $tag ..."
-          cosign sign --yes --oidc  "$tag"
+          cosign sign --yes "$tag"
           done
