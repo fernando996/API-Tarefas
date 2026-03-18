@@ -20,7 +20,7 @@ jobs:
       
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 [cite: 135]
+        uses: actions/checkout@v4
         
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -30,10 +30,10 @@ jobs:
 
       # Gerar SBOM usando o plugin CycloneDX para Maven
       - name: Generate SBOM (Application)
-        run: mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.8.0:makeAggregateBom [cite: 135]
+        run: mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.8.0:makeAggregateBom
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3 [cite: 135]
+        uses: sigstore/cosign-installer@v3
 
       # Assinar o ficheiro bom.json gerado
       - name: Sign SBOM Application
@@ -42,7 +42,7 @@ jobs:
             --yes \
             target/bom.json \
             --output-signature sbom-application.sig \
-            --output-certificate sbom-application.crt [cite: 135]
+            --output-certificate sbom-application.crt
 
       - name: Upload SBOM Application (+sig +crt)
         uses: actions/upload-artifact@v4
@@ -51,7 +51,7 @@ jobs:
           path: |
             target/bom.json
             sbom-application.sig
-            sbom-application.crt [cite: 135]
+            sbom-application.crt
 
   # Job 2: SBOM da Imagem Docker (Trivy)
   sbom-image:
@@ -64,16 +64,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 [cite: 135]
+        uses: actions/checkout@v4
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3 [cite: 135]
+        uses: sigstore/cosign-installer@v3
 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} [cite: 135]
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       
       # Build para AMD64 para permitir o scan local da imagem
       - name: Build Docker image
@@ -86,7 +86,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
           push: false
-          load: true [cite: 135]
+          load: true
       
       # Gerar SBOM da imagem usando Trivy
       - name: Generate SBOM (Docker image)
@@ -94,7 +94,7 @@ jobs:
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: cyclonedx
-          output: sbom-image.cdx.json [cite: 135]
+          output: sbom-image.cdx.json
 
       # Assinar o SBOM da imagem
       - name: Sign SBOM Docker Image
@@ -103,7 +103,7 @@ jobs:
             --yes \
             sbom-image.cdx.json \
             --output-signature sbom-image.sig \
-            --output-certificate sbom-image.crt [cite: 135]
+            --output-certificate sbom-image.crt
 
       - name: Upload SBOM Image (+sig +crt)
         uses: actions/upload-artifact@v4
@@ -112,4 +112,4 @@ jobs:
           path: |
             sbom-image.cdx.json
             sbom-image.sig
-            sbom-image.crt [cite: 135]
+            sbom-image.crt
