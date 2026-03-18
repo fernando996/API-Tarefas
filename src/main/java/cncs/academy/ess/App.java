@@ -13,8 +13,6 @@ import cncs.academy.ess.service.TodoUserService;
 import cncs.academy.ess.service.TodoService;
 import io.javalin.Javalin;
 import io.javalin.community.ssl.SslPlugin;
-
-fernandomartins996/
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
