@@ -90,7 +90,7 @@ jobs:
       
       # Gerar SBOM da imagem usando Trivy
       - name: Generate SBOM (Docker image)
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@0.56.1
         with:
           image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
           format: cyclonedx
