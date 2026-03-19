@@ -88,14 +88,25 @@ jobs:
           push: false
           load: true
       
-      # Gerar SBOM da imagem usando Trivy
+      # # Gerar SBOM da imagem usando Trivy
+      # - name: Generate SBOM (Docker image)
+      #   uses: aquasecurity/trivy-action@0.33.1
+      #   with:
+      #     image-ref: ${{ steps.meta.outputs.tags }}
+      #     format: cyclonedx
+      #     output: sbom-image.cdx.json
+
+
       - name: Generate SBOM (Docker image)
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          image-ref: ${{ steps.meta.outputs.tags }}
-          format: cyclonedx
-          output: sbom-image.cdx.json
-          
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $PWD:/workspace \
+            aquasec/trivy:0.65.0 image \
+            --format cyclonedx \
+            --output /workspace/sbom-image.cdx.json \
+            ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+
       # Assinar o SBOM da imagem
       - name: Sign SBOM Docker Image
         run: |
